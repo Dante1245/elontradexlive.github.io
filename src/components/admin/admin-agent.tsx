@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { adminAgent } from "@/ai/flows/admin-agent-flow";
+import { submitAdminAgentQuery } from "@/lib/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,8 +24,12 @@ export function AdminAgent() {
         setResponse("");
 
         try {
-            const result = await adminAgent({ query });
-            setResponse(result);
+            const result = await submitAdminAgentQuery(query);
+            if (result.success && result.response) {
+                setResponse(result.response);
+            } else {
+                setError(result.error || "Sorry, I encountered an error. Please try again.");
+            }
         } catch (err) {
             console.error("Admin agent error:", err);
             setError("Sorry, I encountered an error. Please try again.");

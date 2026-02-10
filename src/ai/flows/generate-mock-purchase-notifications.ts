@@ -11,7 +11,10 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const GenerateMockPurchaseNotificationInputSchema = z.object({});
+const GenerateMockPurchaseNotificationInputSchema = z.object({
+  wealthyCountries: z.array(z.string()).optional().describe("List of wealthy countries to use in the notification."),
+  cryptoAssets: z.array(z.string()).optional().describe("List of crypto assets to use in the notification."),
+});
 export type GenerateMockPurchaseNotificationInput = z.infer<typeof GenerateMockPurchaseNotificationInputSchema>;
 
 const GenerateMockPurchaseNotificationOutputSchema = z.string();

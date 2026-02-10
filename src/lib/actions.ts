@@ -55,6 +55,27 @@ export async function getMockNotification() {
   }
 }
 
+export async function triggerWelcomeEmail(data: { to: string; name: string }) {
+  try {
+    await sendWelcomeEmail(data);
+    return { success: true };
+  } catch (error) {
+    console.error("Error sending welcome email:", error);
+    return { success: false };
+  }
+}
+
+export async function submitAdminAgentQuery(query: string) {
+  try {
+    const { adminAgent } = await import("@/ai/flows/admin-agent-flow");
+    const response = await adminAgent({ query });
+    return { success: true, response };
+  } catch (error) {
+    console.error("Error querying admin agent:", error);
+    return { success: false, error: "Failed to get response from admin agent." };
+  }
+}
+
 const supportChatSchema = z.object({
     message: z.string(),
 });

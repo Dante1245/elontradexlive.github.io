@@ -5,8 +5,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { CheckCircle } from 'lucide-react';
-
 const faqItems = [
   {
     question: "How do I get started with ElonTradeX?",

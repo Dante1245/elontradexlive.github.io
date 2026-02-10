@@ -33,7 +33,7 @@ import { countries } from "@/lib/countries";
 import { ScrollArea } from "./ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { User } from "@/lib/types";
-import { sendWelcomeEmail } from "@/lib/email";
+import { triggerWelcomeEmail } from "@/lib/actions";
 
 // Zod schema for login form validation
 const loginSchema = z.object({
@@ -167,7 +167,7 @@ export function AuthForm({ type }: { type: "login" | "signup" }) {
       };
       
       // We don't await this so it doesn't block the UI
-      sendWelcomeEmail({ to: newUser.email, name: newUser.name });
+      triggerWelcomeEmail({ to: newUser.email, name: newUser.name });
 
       // Add the new user to our list and save
       const updatedUsers = [...users, newUser];
