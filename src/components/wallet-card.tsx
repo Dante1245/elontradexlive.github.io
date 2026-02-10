@@ -138,7 +138,17 @@ export function WalletCard() {
 
   const onSubmit = (values: WithdrawalFormValues) => {
     startTransition(async () => {
-        const result = await submitWithdrawalRequest(values);
+        const storedUser = typeof window !== 'undefined' ? localStorage.getItem('loggedInUser') : null;
+        if (!storedUser) {
+            toast({
+              title: "Error",
+              description: "You must be logged in to make a withdrawal.",
+              variant: "destructive",
+            });
+            return;
+        }
+        const user = JSON.parse(storedUser);
+        const result = await submitWithdrawalRequest(values, user);
 
         if (result.success) {
             toast({
