@@ -1,11 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    serverExternalPackages: [
-        'express',
-        'import-in-the-middle',
-        '@genkit-ai/core',
-        '@opentelemetry/instrumentation',
-    ],
     images: {
         remotePatterns: [
             {
