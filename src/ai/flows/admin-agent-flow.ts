@@ -1,33 +1,12 @@
-
 'use server';
-/**
- * @fileOverview An AI agent that can answer questions about the ElonTradeX admin panel.
- *
- * - adminAgent - A function that handles conversational queries about the admin panel.
- * - AdminAgentInput - The input type for the adminAgent function.
- * - AdminAgentOutput - The return type for the adminAgent function.
- */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { generateText } from '@/ai/genkit';
 
-const AdminAgentInputSchema = z.object({
-  query: z.string().describe("The admin's question about the platform's features or data."),
-});
-export type AdminAgentInput = z.infer<typeof AdminAgentInputSchema>;
-
-const AdminAgentOutputSchema = z.string().describe("The AI agent's response.");
-export type AdminAgentOutput = z.infer<typeof AdminAgentOutputSchema>;
+export type AdminAgentInput = { query: string };
+export type AdminAgentOutput = string;
 
 export async function adminAgent(input: AdminAgentInput): Promise<AdminAgentOutput> {
-  return adminAgentFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'adminAgentPrompt',
-  input: {schema: AdminAgentInputSchema},
-  output: {schema: AdminAgentOutputSchema.nullable()},
-  prompt: `You are a helpful AI assistant for the administrators of the "ElonTradeX" platform.
+  const prompt = `You are a helpful AI assistant for the administrators of the "ElonTradeX" platform.
 
 Your role is to provide clear and concise answers about the functionalities of the admin panel based *only* on the information provided below. Do not invent features.
 
@@ -66,18 +45,12 @@ The admin panel is the central hub for managing the ElonTradeX platform, its use
 
 ***
 
-Admin's Question: {{{query}}}
-`,
-});
+Admin's Question: ${input.query}
+`;
 
-const adminAgentFlow = ai.defineFlow(
-  {
-    name: 'adminAgentFlow',
-    inputSchema: AdminAgentInputSchema,
-    outputSchema: AdminAgentOutputSchema,
-  },
-  async (input) => {
-    const {text} = await prompt(input);
-    return text ?? "Sorry, I am unable to answer that at the moment. Please refer to the documentation or contact support.";
+  try {
+    return await generateText(prompt);
+  } catch {
+    return "Sorry, I am unable to answer that at the moment. Please refer to the documentation or contact support.";
   }
-);
+}

@@ -1,35 +1,12 @@
-
 'use server';
-/**
- * @fileOverview A conversational AI flow for the ElonTradeX support bot.
- *
- * - supportChat - A function that handles the conversational chat with the support bot.
- * - SupportChatInput - The input type for the supportChat function.
- * - SupportChatOutput - The return type for the supportChat function.
- */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { generateText } from '@/ai/genkit';
 
-const SupportChatInputSchema = z.object({
-  message: z.string().describe("The user's message or question to the support bot."),
-});
-export type SupportChatInput = z.infer<typeof SupportChatInputSchema>;
-
-const SupportChatOutputSchema = z.string().describe("The support bot's response.");
-export type SupportChatOutput = z.infer<typeof SupportChatOutputSchema>;
-
+export type SupportChatInput = { message: string };
+export type SupportChatOutput = string;
 
 export async function supportChat(input: SupportChatInput): Promise<SupportChatOutput> {
-  return supportChatFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'supportChatPrompt',
-  input: {schema: SupportChatInputSchema},
-  output: {schema: SupportChatOutputSchema.nullable()},
-  model: 'googleai/gemini-2.0-flash',
-  prompt: `You are "Xavier", the friendly and helpful AI support assistant for ElonTradeX, a cutting-edge cryptocurrency trading platform.
+  const prompt = `You are "Xavier", the friendly and helpful AI support assistant for ElonTradeX, a cutting-edge cryptocurrency trading platform.
 
 **IMPORTANT:** First, detect the language of the user's question. You MUST respond in the same language.
 
@@ -98,18 +75,12 @@ Keep your answers brief and to the point.
 
 ***
 
-User's Question: {{{message}}}
-`,
-});
+User's Question: ${input.message}
+`;
 
-const supportChatFlow = ai.defineFlow(
-  {
-    name: 'supportChatFlow',
-    inputSchema: SupportChatInputSchema,
-    outputSchema: SupportChatOutputSchema,
-  },
-  async (input) => {
-    const {text} = await prompt(input);
-    return text ?? "Sorry, I am unable to answer that at the moment. Please try again.";
+  try {
+    return await generateText(prompt);
+  } catch {
+    return "Sorry, I am unable to answer that at the moment. Please try again.";
   }
-);
+}
