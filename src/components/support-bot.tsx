@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import { supportChat } from "@/ai/flows/support-chat-flow";
+import { submitSupportMessage } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -47,9 +47,14 @@ export function SupportBot() {
     setIsLoading(true);
 
     try {
-        const botResponse = await supportChat({ message: input });
-        const botMessage: Message = { role: "bot", text: botResponse };
-        setMessages((prev) => [...prev, botMessage]);
+        const result = await submitSupportMessage({ message: input });
+        if (result.success && result.response) {
+            const botMessage: Message = { role: "bot", text: result.response };
+            setMessages((prev) => [...prev, botMessage]);
+        } else {
+            const errorMessage: Message = { role: "bot", text: result.error || "Sorry, I'm having trouble connecting. Please try again later." };
+            setMessages((prev) => [...prev, errorMessage]);
+        }
     } catch (error) {
         console.error("Support bot error:", error);
         const errorMessage: Message = { role: "bot", text: "Sorry, I'm having trouble connecting. Please try again later." };
